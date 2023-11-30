@@ -1,0 +1,8 @@
+// Test All
+forge src/test -vv
+
+// Test with call logs
+forge test -vvvvv
+
+// SemiFungiblePositionManager 
+forge test -vvvv --match-path test/foundry/core/SemiFungiblePositionManager.t.sol --match-contract SemiFungiblePositionManagerTest --match-test "test_Success_initializeAMMPool_Single*"

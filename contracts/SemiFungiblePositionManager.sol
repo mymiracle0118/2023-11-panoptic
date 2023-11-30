@@ -37,7 +37,7 @@ import {TokenId} from "@types/TokenId.sol";
 //    .,,,,,,,,,,,,        .,,,,,,,,,,,,,                                                                            ,,,,,,,,,,,,,          ,,,,,,,,,,,,
 //    ,,,,,,,,,,,,         ,,,,,,,,,,,,                                                                               ,,,,,,,,,,,,,         .,,,,,,,,,,,,
 //   ,,,,,,,,,,,,         ,,,,,,,,,,,,                                                                                 ,,,,,,,,,,,,.         ,,,,,,,,,,,,
-//   ,,,,,,,,,,,,        ,,,,,,,,,,,,.                █████████  ███████████ ███████████  ██████   ██████               ,,,,,,,,,,,,          ,,,,,,,,,,,,
+//   ,,,,,,,,,,,,        ,,,,,,,,,,,,.               █████████  ███████████ ███████████  ██████   ██████               ,,,,,,,,,,,,          ,,,,,,,,,,,,
 //  .,,,,,,,,,,,,        ,,,,,,,,,,,,                ███░░░░░███░░███░░░░░░█░░███░░░░░███░░██████ ██████                .,,,,,,,,,,,,         ,,,,,,,,,,,,
 //  ,,,,,,,,,,,,        ,,,,,,,,,,,,                ░███    ░░░  ░███   █ ░  ░███    ░███ ░███░█████░███                 ,,,,,,,,,,,,         ,,,,,,,,,,,,.
 //  ,,,,,,,,,,,,        ,,,,,,,,,,,,                ░░█████████  ░███████    ░██████████  ░███░░███ ░███                 .,,,,,,,,,,,          ,,,,,,,,,,,.
@@ -303,7 +303,7 @@ contract SemiFungiblePositionManager is ERC1155, Multicall {
     /// @dev We piggyback the reentrancy lock on the (pool id => pool) mapping to save gas
     /// @dev (there's an extra 96 bits of storage available in the mapping slot and it's almost always warm)
     /// @param poolId The poolId of the pool to activate the reentrancy lock on
-    modifier ReentrancyLock(uint64 poolId) {
+    modifier ReentrancyLock(uint64 poolId) {// @audit another pool id can cause reentrancy?
         // check if the pool is already locked
         // init lock if not
         beginReentrancyLock(poolId);
