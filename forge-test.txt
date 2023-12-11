@@ -5,4 +5,38 @@ forge src/test -vv
 forge test -vvvvv
 
 // SemiFungiblePositionManager 
-forge test -vvvv --match-path test/foundry/core/SemiFungiblePositionManager.t.sol --match-contract SemiFungiblePositionManagerTest --match-test "test_Success_initializeAMMPool_Single*"
+forge test -vvvvv --match-path test/foundry/core/SemiFungiblePositionManager.t.sol --match-contract SemiFungiblePositionManagerTest --match-test "test_Success_initializeAMMPool_Single*"
+
+forge test -vvvvv --match-path test/foundry/core/SemiFungiblePositionManager.t.sol --match-contract SemiFungiblePositionManagerTest --match-test "test_Success_initializeAMMPool_HandleCollisions*"
+
+
+///Out side of Range Short Call
+forge test -vvvvv --match-path test/foundry/core/SemiFungiblePositionManager.t.sol --match-contract SemiFungiblePositionManagerTest --match-test "test_Success_mintTokenizedPosition_OutsideRangeShortCall*"
+
+///Short Put
+forge test -vvvvv --match-path test/foundry/core/SemiFungiblePositionManager.t.sol --match-contract SemiFungiblePositionManagerTest --match-test "test_Success_mintTokenizedPosition_OutsideRangeShortPut*"
+
+///Out side of Range ShortCall+LongCall
+forge test -vvvvv --match-path test/foundry/core/SemiFungiblePositionManager.t.sol --match-contract SemiFungiblePositionManagerTest --match-test "test_Success_mintTokenizedPosition_OutOfRangeShortCallLongCallCombined*"
+
+///In Range ShortPutNoSwap
+forge test -vvvvv --match-path test/foundry/core/SemiFungiblePositionManager.t.sol --match-contract SemiFungiblePositionManagerTest --match-test "test_Success_mintTokenizedPosition_InRangeShortPutNoSwap*"
+
+///In Range ShortPutSwap
+forge test -vvvvv --match-path test/foundry/core/SemiFungiblePositionManager.t.sol --match-contract SemiFungiblePositionManagerTest --match-test "test_Success_mintTokenizedPosition_InRangeShortPutSwap*"
+
+///ITMShortCallCombineSwap
+forge test -vvvvv --match-path test/foundry/core/SemiFungiblePositionManager.t.sol --match-contract SemiFungiblePositionManagerTest --match-test "test_Success_mintTokenizedPosition_ITMShortPutShortCallCombinedSwap*"
+
+///Reentrancy test
+forge test -vvvvv --match-path test/foundry/core/SemiFungiblePositionManager.t.sol --match-contract SemiFungiblePositionManagerTest --match-test "test_Fail_mintTokenizedPosition_ReentrancyLock*"
+
+
+
+forge debug --debug test/foundry/core/SemiFungiblePositionManager.t.sol --sig "test_Success_mintTokenizedPosition_OutsideRangeShortCall(uint256,string)" 123 "hello"
+
+///Debug
+forge test --debug "test_Success_mintTokenizedPosition_OutsideRangeShortCall" --match-path test/foundry/core/SemiFungiblePositionManager.t.sol --match-contract SemiFungiblePositionManagerTest
+
+forge debug --debug test/foundry/core/SemiFungiblePositionManager.t.sol --tc SemiFungiblePositionManagerTest --sig "test_Success_mintTokenizedPosition_OutsideRangeShortCall(uint256 x, uint256 widthSeed, int256 strikeSeed, uint256 positionSizeSeed)" 3 20 10 10
+

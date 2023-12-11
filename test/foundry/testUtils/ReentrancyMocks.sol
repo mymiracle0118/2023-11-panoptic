@@ -106,6 +106,6 @@ contract ReenterMint {
     }
 
     fallback() external {
-        SemiFungiblePositionManagerHarness(msg.sender).mintTokenizedPosition(0, 0, 0, 0);
+        SemiFungiblePositionManagerHarness(msg.sender).burnTokenizedPosition(0, 0, 0, 0);
     }
 }

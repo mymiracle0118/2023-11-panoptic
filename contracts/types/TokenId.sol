@@ -4,6 +4,8 @@ pragma solidity ^0.8.0;
 // Libraries
 import {Constants} from "@libraries/Constants.sol";
 import {Errors} from "@libraries/Errors.sol";
+import "forge-std/console.sol";
+import "forge-std/console2.sol";
 
 /// @title Panoptic's tokenId: the fundamental options position.
 /// @author Axicon Labs Limited
@@ -379,16 +381,26 @@ library TokenId {
         unchecked {
             int24 selfWidth = self.width(legIndex);
             int24 selfStrike = self.strike(legIndex);
+            console2.log("astick function");
+            console2.log("selfwidth", selfWidth);
+            console2.log("selfStrike", selfStrike);
 
             // The max/min ticks that can be initialized are the closest multiple of tickSpacing to the actual max/min tick abs()=887272
             // Dividing and multiplying by tickSpacing rounds down and forces the tick to be a multiple of tickSpacing
             int24 minTick = (Constants.MIN_V3POOL_TICK / tickSpacing) * tickSpacing;
             int24 maxTick = (Constants.MAX_V3POOL_TICK / tickSpacing) * tickSpacing;
+            console2.log("mintTick", minTick);
+            console2.log("maxTick", maxTick);
 
             // The width is from lower to upper tick, the one-sided range is from strike to upper/lower
             int24 oneSidedRange = (selfWidth * tickSpacing) / 2;
+            
+            console2.log("oneSidedRange", oneSidedRange);
 
             (legLowerTick, legUpperTick) = (selfStrike - oneSidedRange, selfStrike + oneSidedRange);
+            
+            console2.log("legLowerTick", legLowerTick);
+            console2.log("legupperTick", legUpperTick);
 
             // Revert if the upper/lower ticks are not multiples of tickSpacing
             // Revert if the tick range extends from the strike outside of the valid tick range

@@ -25,6 +25,8 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {PositionUtils} from "../testUtils/PositionUtils.sol";
 import {UniPoolPriceMock} from "../testUtils/PriceMocks.sol";
 import {ReenterMint, ReenterBurn} from "../testUtils/ReentrancyMocks.sol";
+import "forge-std/console.sol";
+import "forge-std/console2.sol";
 
 contract SemiFungiblePositionManagerHarness is SemiFungiblePositionManager {
     constructor(IUniswapV3Factory _factory) SemiFungiblePositionManager(_factory) {}
@@ -182,14 +184,17 @@ contract SemiFungiblePositionManagerTest is PositionUtils {
 
     /// @notice Intialize testing pool in the SFPM instance after world state is setup
     function _initPool(uint256 seed) internal {
+        // console.log("Init pool seed ", seed);
         _initWorld(seed);
         sfpm.initializeAMMPool(token0, token1, fee);
     }
 
     /// @notice Set up world state with data from a random pool off the list and fund+approve actors
     function _initWorld(uint256 seed) internal {
+        // console.log("---------------seed--------------", seed);
         // Pick a pool from the seed and cache initial state
         _cacheWorldState(pools[bound(seed, 0, pools.length - 1)]);
+        // _cacheWorldState(pools[0]);
 
         // Fund some of the the generic actor accounts
         vm.startPrank(Bob);
@@ -228,7 +233,9 @@ contract SemiFungiblePositionManagerTest is PositionUtils {
         pool = _pool;
         poolId = PanopticMath.getPoolId(address(_pool));
         token0 = _pool.token0();
+        // token0= address(0x1);
         token1 = _pool.token1();
+        // token1 = address(0x1);
         isWETH = token0 == address(WETH) ? 0 : 1;
         fee = _pool.fee();
         tickSpacing = _pool.tickSpacing();
@@ -906,6 +913,19 @@ contract SemiFungiblePositionManagerTest is PositionUtils {
             sfpm.addrToPoolId(address(pool)),
             PanopticMath.getPoolId(address(pool)) + 2 ** 255
         );
+        // console.log("-----------------------------------------------");
+        // _initPool(x);
+
+        // assertEq(
+        //     address(sfpm.poolContext(PanopticMath.getPoolId(address(pool))).pool),
+        //     address(pool)
+        // );
+
+        // // Check that the pool ID is set correctly
+        // assertEq(
+        //     sfpm.addrToPoolId(address(pool)),
+        //     PanopticMath.getPoolId(address(pool)) + 2 ** 255
+        // );
     }
 
     function test_Success_initializeAMMPool_Multiple() public {
@@ -1005,6 +1025,10 @@ contract SemiFungiblePositionManagerTest is PositionUtils {
 
         populatePositionData(width, strike, positionSizeSeed);
 
+        console.log("-------------------------------------------");
+        console2.log("strike", strike);
+        console2.log("width", width);
+
         /// position size is denominated in the opposite of asset, so we do it in the token that is not WETH
         uint256 tokenId = uint256(0).addUniv3pool(poolId).addLeg(
             0,
@@ -1017,6 +1041,12 @@ contract SemiFungiblePositionManagerTest is PositionUtils {
             width
         );
 
+        console.log("-------------------TokenId----------------"); 
+        console.log(tokenId);
+
+        console.log("--------------------poolId----------------");
+        console.log(poolId);
+
         (int256 totalCollected, int256 totalSwapped, int24 newTick) = sfpm.mintTokenizedPosition(
             tokenId,
             uint128(positionSize),
@@ -1025,9 +1055,19 @@ contract SemiFungiblePositionManagerTest is PositionUtils {
         );
 
         (, currentTick, , , , , ) = pool.slot0();
+
+        console2.log("-------current tick---------", currentTick);
+        console2.log("-------new tick-------", newTick);
         assertEq(newTick, currentTick);
 
         assertEq(totalCollected, 0);
+        console.log("-----------Amount0Moved------------");
+        console2.log($amount0Moved);
+        console.log("-----------Amount1Moved------------");
+        console2.log($amount1Moved);
+
+        console.log("-----------total swapped-----------");
+        console2.log(totalSwapped);
 
         assertEq(totalSwapped.rightSlot(), $amount0Moved);
         assertEq(totalSwapped.leftSlot(), $amount1Moved);
@@ -1067,6 +1107,11 @@ contract SemiFungiblePositionManagerTest is PositionUtils {
             currentTick
         );
 
+        console.log("-------------------------------------------");
+        console2.log("strike", strike);
+        console2.log("width", width);
+        console2.log("isWeth", isWETH);
+
         populatePositionData(width, strike, positionSizeSeed);
 
         /// position size is denominated in the opposite of asset, so we do it in the token that is not WETH
@@ -1081,12 +1126,18 @@ contract SemiFungiblePositionManagerTest is PositionUtils {
             width
         );
 
+        console.log("-------------------TokenId----------------"); 
+        console.log(tokenId);
+
+        console.log("--------------------poolId----------------");
+        console.log(poolId);
+
         (int256 totalCollected, int256 totalSwapped, int24 newTick) = sfpm.mintTokenizedPosition(
             tokenId,
             uint128(positionSize),
             TickMath.MIN_TICK,
             TickMath.MAX_TICK
-        );
+        );      
 
         (, currentTick, , , , , ) = pool.slot0();
         assertEq(newTick, currentTick);
@@ -1425,6 +1476,9 @@ contract SemiFungiblePositionManagerTest is PositionUtils {
             uint24(tickSpacing),
             currentTick
         );
+
+        width = 300;
+        strike = 2400;
 
         populatePositionData(width, strike, positionSizeSeed);
 
